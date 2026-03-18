@@ -274,9 +274,9 @@ const ReceptionDashboard = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#F8F9FA]" data-testid="reception-dashboard">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-50" data-testid="reception-dashboard">
       {/* Header */}
-      <div className="bg-white border-b border-slate-200 p-6">
+      <div className="bg-white/95 backdrop-blur-md border-b border-slate-200 shadow-sm p-6">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-4">
             <Button
@@ -288,7 +288,7 @@ const ReceptionDashboard = () => {
             >
               <ArrowLeft className="w-5 h-5" />
             </Button>
-            <h1 className="text-2xl font-bold" style={{ fontFamily: 'DM Sans, sans-serif' }}>Reception Dashboard</h1>
+            <h1 className="text-2xl font-bold bg-gradient-to-r from-[#2C5F5D] to-[#1F4644] bg-clip-text text-transparent" style={{ fontFamily: 'DM Sans, sans-serif' }}>Reception Dashboard</h1>
           </div>
           <div className="flex gap-2">
             <Button
@@ -329,8 +329,8 @@ const ReceptionDashboard = () => {
               return (
                 <Card
                   key={order.id}
-                  className={`p-4 border-2 transition-all hover:shadow-lg ${
-                    hasNewItems(order) ? 'border-[#C9A961] bg-[#FFF8ED]' : 'border-slate-200'
+                  className={`p-4 border-2 transition-all duration-200 hover:shadow-xl transform hover:scale-[1.02] ${
+                    hasNewItems(order) ? 'border-[#C9A961] bg-gradient-to-br from-[#FFF8ED] to-[#FFF0E0] shadow-lg' : 'border-slate-200 bg-white shadow-sm'
                   }`}
                   data-testid={`order-card-${order.table_number}`}
                 >
@@ -395,7 +395,7 @@ const ReceptionDashboard = () => {
                     </Button>
                     <Button
                       onClick={() => generateBill(order)}
-                      className="flex-1 bg-[#C9A961] hover:bg-[#B8945F] text-white rounded-full"
+                      className="flex-1 bg-gradient-to-r from-[#C9A961] to-[#B8945F] hover:from-[#B8945F] hover:to-[#A67D4B] shadow-lg hover:shadow-xl transform hover:scale-[1.02] text-white rounded-full"
                       data-testid={`bill-button-${order.table_number}`}
                     >
                       Bill
@@ -460,7 +460,7 @@ const ReceptionDashboard = () => {
                 </Button>
                 <Button
                   onClick={completeOrder}
-                  className="flex-1 bg-[#C9A961] hover:bg-[#B8945F] text-white rounded-full"
+                  className="flex-1 bg-gradient-to-r from-[#C9A961] to-[#B8945F] hover:from-[#B8945F] hover:to-[#A67D4B] shadow-lg hover:shadow-xl transform hover:scale-[1.02] text-white rounded-full"
                   data-testid="complete-order-button"
                 >
                   Complete & Close

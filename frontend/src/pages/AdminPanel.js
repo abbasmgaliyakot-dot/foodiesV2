@@ -239,9 +239,9 @@ const AdminPanel = () => {
   }, {});
 
   return (
-    <div className="min-h-screen bg-[#F8F9FA]" data-testid="admin-panel">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-50" data-testid="admin-panel">
       {/* Header */}
-      <div className="bg-white border-b border-slate-200 p-6">
+      <div className="bg-white/95 backdrop-blur-md border-b border-slate-200 shadow-sm p-6">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-4">
             <Button
@@ -253,7 +253,7 @@ const AdminPanel = () => {
             >
               <ArrowLeft className="w-5 h-5" />
             </Button>
-            <h1 className="text-3xl font-bold" style={{ fontFamily: 'DM Sans, sans-serif' }}>Admin Panel</h1>
+            <h1 className="text-3xl font-bold bg-gradient-to-r from-[#2C5F5D] to-[#1F4644] bg-clip-text text-transparent" style={{ fontFamily: 'DM Sans, sans-serif' }}>Admin Panel</h1>
           </div>
           <Button
             variant="outline"
@@ -347,7 +347,7 @@ const AdminPanel = () => {
                 
                 <Button
                   onClick={saveSettings}
-                  className="w-full bg-[#C9A961] hover:bg-[#B8945F] text-white rounded-full"
+                  className="w-full bg-gradient-to-r from-[#C9A961] to-[#B8945F] hover:from-[#B8945F] hover:to-[#A67D4B] shadow-lg hover:shadow-xl transform hover:scale-[1.02] text-white rounded-full"
                   data-testid="save-settings-button"
                 >
                   Save Settings
@@ -385,7 +385,7 @@ const AdminPanel = () => {
                 }
               }}>
                 <DialogTrigger asChild>
-                  <Button className="bg-[#C9A961] hover:bg-[#B8945F] text-white rounded-full" data-testid="add-menu-item-button">
+                  <Button className="bg-gradient-to-r from-[#C9A961] to-[#B8945F] hover:from-[#B8945F] hover:to-[#A67D4B] shadow-lg hover:shadow-xl transform hover:scale-[1.02] text-white rounded-full" data-testid="add-menu-item-button">
                     <Plus className="w-4 h-4 mr-2" />
                     Add Menu Item
                   </Button>
@@ -435,7 +435,7 @@ const AdminPanel = () => {
                     </div>
                     <Button
                       onClick={saveMenuItem}
-                      className="w-full bg-[#C9A961] hover:bg-[#B8945F] text-white rounded-full"
+                      className="w-full bg-gradient-to-r from-[#C9A961] to-[#B8945F] hover:from-[#B8945F] hover:to-[#A67D4B] shadow-lg hover:shadow-xl transform hover:scale-[1.02] text-white rounded-full"
                       data-testid="save-menu-item-button"
                     >
                       {editingItem ? 'Update' : 'Create'} Item
@@ -508,7 +508,7 @@ const AdminPanel = () => {
                 }
               }}>
                 <DialogTrigger asChild>
-                  <Button className="bg-[#C9A961] hover:bg-[#B8945F] text-white rounded-full" data-testid="add-table-button">
+                  <Button className="bg-gradient-to-r from-[#C9A961] to-[#B8945F] hover:from-[#B8945F] hover:to-[#A67D4B] shadow-lg hover:shadow-xl transform hover:scale-[1.02] text-white rounded-full" data-testid="add-table-button">
                     <Plus className="w-4 h-4 mr-2" />
                     Add Table
                   </Button>
@@ -539,7 +539,7 @@ const AdminPanel = () => {
                     </div>
                     <Button
                       onClick={saveTable}
-                      className="w-full bg-[#C9A961] hover:bg-[#B8945F] text-white rounded-full"
+                      className="w-full bg-gradient-to-r from-[#C9A961] to-[#B8945F] hover:from-[#B8945F] hover:to-[#A67D4B] shadow-lg hover:shadow-xl transform hover:scale-[1.02] text-white rounded-full"
                       data-testid="save-table-button"
                     >
                       {editingItem ? 'Update' : 'Create'} Table
@@ -598,7 +598,7 @@ const AdminPanel = () => {
               <h2 className="text-xl font-bold" style={{ fontFamily: 'DM Sans, sans-serif' }}>Staff Users</h2>
               <Dialog open={showUserDialog} onOpenChange={setShowUserDialog}>
                 <DialogTrigger asChild>
-                  <Button className="bg-[#C9A961] hover:bg-[#B8945F] text-white rounded-full" data-testid="add-user-button">
+                  <Button className="bg-gradient-to-r from-[#C9A961] to-[#B8945F] hover:from-[#B8945F] hover:to-[#A67D4B] shadow-lg hover:shadow-xl transform hover:scale-[1.02] text-white rounded-full" data-testid="add-user-button">
                     <Plus className="w-4 h-4 mr-2" />
                     Add User
                   </Button>
@@ -641,7 +641,7 @@ const AdminPanel = () => {
                     </div>
                     <Button
                       onClick={createUser}
-                      className="w-full bg-[#C9A961] hover:bg-[#B8945F] text-white rounded-full"
+                      className="w-full bg-gradient-to-r from-[#C9A961] to-[#B8945F] hover:from-[#B8945F] hover:to-[#A67D4B] shadow-lg hover:shadow-xl transform hover:scale-[1.02] text-white rounded-full"
                       data-testid="create-user-button"
                     >
                       Create User

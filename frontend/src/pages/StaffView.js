@@ -189,9 +189,9 @@ const StaffView = () => {
   const getTableStatusColor = (status) => {
     switch (status) {
       case 'available':
-        return 'bg-white border-2 border-slate-200 text-slate-600';
+        return 'bg-white border-2 border-slate-200 text-slate-600 shadow-sm hover:shadow-lg hover:border-slate-300';
       case 'running':
-        return 'bg-[#FFF8ED] border-2 border-[#C9A961] text-[#B8945F]';
+        return 'bg-gradient-to-br from-[#FFF8ED] to-[#FFF0E0] border-2 border-[#C9A961] text-[#B8945F] shadow-md hover:shadow-xl';
       case 'closed':
         return 'bg-slate-100 border-2 border-slate-300 text-slate-400 opacity-70';
       default:
@@ -200,11 +200,11 @@ const StaffView = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#F8F9FA]" data-testid="staff-view">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-50" data-testid="staff-view">
       {/* Header */}
-      <div className="sticky top-0 bg-white/90 backdrop-blur-md border-b border-slate-100 z-40 p-4">
+      <div className="sticky top-0 bg-white/95 backdrop-blur-md border-b border-slate-200 shadow-sm z-40 p-4">
         <div className="flex items-center justify-between">
-          <h1 className="text-2xl font-bold" style={{ fontFamily: 'DM Sans, sans-serif' }}>Tables</h1>
+          <h1 className="text-2xl font-bold bg-gradient-to-r from-[#2C5F5D] to-[#1F4644] bg-clip-text text-transparent" style={{ fontFamily: 'DM Sans, sans-serif' }}>Tables</h1>
           <div className="flex gap-2">
             {user?.role === 'admin' && (
               <Button
@@ -257,14 +257,14 @@ const StaffView = () => {
         {tables.map((table) => (
           <Card
             key={table.id}
-            className={`flex flex-col items-center justify-center aspect-square rounded-xl transition-all active:scale-95 cursor-pointer ${getTableStatusColor(table.status)} hover:shadow-md`}
+            className={`flex flex-col items-center justify-center aspect-square rounded-2xl transition-all duration-200 active:scale-95 cursor-pointer transform hover:scale-105 ${getTableStatusColor(table.status)}`}
             onClick={() => handleTableClick(table)}
             data-testid={`table-card-${table.table_number}`}
           >
             <div className="text-center">
               <div className="text-2xl font-bold mb-1" style={{ fontFamily: 'DM Sans, sans-serif' }}>{table.table_number}</div>
               <div className="text-xs font-medium uppercase tracking-wide">{table.status}</div>
-              <div className="text-xs mt-1">Cap: {table.capacity}</div>
+              <div className="text-xs mt-1 opacity-75">Cap: {table.capacity}</div>
             </div>
           </Card>
         ))}
@@ -391,7 +391,7 @@ const StaffView = () => {
                 </div>
                 <Button
                   onClick={submitOrder}
-                  className="w-full mt-4 bg-[#C9A961] hover:bg-[#B8945F] text-white rounded-full font-medium"
+                  className="w-full mt-4 bg-gradient-to-r from-[#C9A961] to-[#B8945F] hover:from-[#B8945F] hover:to-[#A67D4B] text-white rounded-full font-medium shadow-lg hover:shadow-xl transition-all transform hover:scale-[1.02]"
                   data-testid="submit-order-button"
                 >
                   Submit Order

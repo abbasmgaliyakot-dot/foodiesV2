@@ -34,7 +34,7 @@
     @apply border-border;
   }
   body {
-    @apply bg-[#F8F9FA] text-slate-900 font-[Inter];
+    @apply bg-gradient-to-br from-slate-50 via-white to-slate-50 text-slate-900 font-[Inter];
   }
   h1, h2, h3, h4, h5, h6 {
     @apply font-['DM_Sans'];

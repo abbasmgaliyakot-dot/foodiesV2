@@ -38,20 +38,20 @@ const HistoryPage = () => {
   );
 
   return (
-    <div className="min-h-screen bg-[#F8F9FA]" data-testid="history-page">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-50" data-testid="history-page">
       {/* Header */}
-      <div className="bg-white border-b border-slate-200 p-4">
+      <div className="bg-white/95 backdrop-blur-md border-b border-slate-200 shadow-sm p-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-4">
             <Button
               variant="outline"
               size="icon"
               onClick={() => navigate('/')}
-              className="rounded-full border-slate-200"
+              className="rounded-full border-slate-200 hover:border-[#C9A961] hover:text-[#C9A961] transition-colors"
             >
               <ArrowLeft className="w-5 h-5" />
             </Button>
-            <h1 className="text-2xl font-bold" style={{ fontFamily: 'DM Sans, sans-serif' }}>Order History</h1>
+            <h1 className="text-2xl font-bold bg-gradient-to-r from-[#2C5F5D] to-[#1F4644] bg-clip-text text-transparent" style={{ fontFamily: 'DM Sans, sans-serif' }}>Order History</h1>
           </div>
         </div>
       </div>
@@ -83,10 +83,10 @@ const HistoryPage = () => {
           </Card>
         ) : (
           filteredOrders.map((order) => (
-            <Card key={order.id} className="p-4 border-slate-200">
+            <Card key={order.id} className="p-4 border-slate-200 shadow-sm hover:shadow-lg transition-all duration-200 bg-white">
               <div className="flex items-start justify-between mb-3">
                 <div>
-                  <h3 className="text-xl font-bold" style={{ fontFamily: 'DM Sans, sans-serif' }}>
+                  <h3 className="text-xl font-bold text-[#2C5F5D]" style={{ fontFamily: 'DM Sans, sans-serif' }}>
                     Table {order.table_number}
                   </h3>
                   <div className="text-sm text-slate-500">
@@ -99,7 +99,7 @@ const HistoryPage = () => {
                 </div>
                 <div className="text-right">
                   <div className="text-sm text-slate-500">Total</div>
-                  <div className="text-2xl font-bold mono text-[#C9A961]">{formatPrice(order.total)}</div>
+                  <div className="text-2xl font-bold mono bg-gradient-to-r from-[#C9A961] to-[#B8945F] bg-clip-text text-transparent">{formatPrice(order.total)}</div>
                 </div>
               </div>
 
