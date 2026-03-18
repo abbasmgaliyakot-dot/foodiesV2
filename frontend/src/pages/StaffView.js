@@ -220,6 +220,17 @@ const StaffView = () => {
             <Button
               variant="outline"
               size="icon"
+              onClick={() => navigate('/history')}
+              className="rounded-full border-slate-200"
+              data-testid="history-button"
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+            </Button>
+            <Button
+              variant="outline"
+              size="icon"
               onClick={() => navigate('/reception')}
               className="rounded-full border-slate-200"
               data-testid="reception-button"
@@ -242,18 +253,18 @@ const StaffView = () => {
       </div>
 
       {/* Tables Grid */}
-      <div className="grid grid-cols-2 gap-4 p-4 pb-24">
+      <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-3 p-4 pb-24">
         {tables.map((table) => (
           <Card
             key={table.id}
-            className={`flex flex-col items-center justify-center aspect-square rounded-2xl transition-all active:scale-95 cursor-pointer ${getTableStatusColor(table.status)} hover:shadow-md`}
+            className={`flex flex-col items-center justify-center aspect-square rounded-xl transition-all active:scale-95 cursor-pointer ${getTableStatusColor(table.status)} hover:shadow-md`}
             onClick={() => handleTableClick(table)}
             data-testid={`table-card-${table.table_number}`}
           >
             <div className="text-center">
-              <div className="text-4xl font-bold mb-2" style={{ fontFamily: 'DM Sans, sans-serif' }}>{table.table_number}</div>
-              <div className="text-sm font-medium uppercase tracking-wide">{table.status}</div>
-              <div className="text-xs mt-1">Capacity: {table.capacity}</div>
+              <div className="text-2xl font-bold mb-1" style={{ fontFamily: 'DM Sans, sans-serif' }}>{table.table_number}</div>
+              <div className="text-xs font-medium uppercase tracking-wide">{table.status}</div>
+              <div className="text-xs mt-1">Cap: {table.capacity}</div>
             </div>
           </Card>
         ))}

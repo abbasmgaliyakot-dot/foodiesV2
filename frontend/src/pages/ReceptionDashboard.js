@@ -13,7 +13,7 @@ import { useNavigate } from 'react-router-dom';
 const ReceptionDashboard = () => {
   const { API, getAuthHeader, logout } = useAuth();
   const { socket } = useSocket();
-  const { formatPrice, currencySymbol } = useCurrency();
+  const { formatPrice, currencySymbol, taxEnabled, taxName } = useCurrency();
   const navigate = useNavigate();
   const [tables, setTables] = useState([]);
   const [orders, setOrders] = useState([]);
@@ -221,6 +221,16 @@ const ReceptionDashboard = () => {
           `).join('')}
         </div>
         <div class="total-section">
+          <div style="display: flex; justify-content: space-between; margin: 5px 0;">
+            <span>Subtotal</span>
+            <span>${currencySymbol}${(selectedOrder.subtotal || selectedOrder.total).toFixed(2)}</span>
+          </div>
+          ${selectedOrder.tax_amount > 0 ? `
+          <div style="display: flex; justify-content: space-between; margin: 5px 0;">
+            <span>${taxName} (${selectedOrder.tax_rate}%)</span>
+            <span>${currencySymbol}${selectedOrder.tax_amount.toFixed(2)}</span>
+          </div>
+          ` : ''}
           <div class="total">
             <span>TOTAL</span>
             <span>${currencySymbol}${selectedOrder.total.toFixed(2)}</span>
@@ -278,46 +288,58 @@ const ReceptionDashboard = () => {
             >
               <ArrowLeft className="w-5 h-5" />
             </Button>
-            <h1 className="text-3xl font-bold" style={{ fontFamily: 'DM Sans, sans-serif' }}>Reception Dashboard</h1>
+            <h1 className="text-2xl font-bold" style={{ fontFamily: 'DM Sans, sans-serif' }}>Reception Dashboard</h1>
           </div>
-          <Button
-            variant="outline"
-            onClick={logout}
-            className="rounded-full border-slate-200"
-            data-testid="logout-button"
-          >
-            <LogOut className="w-4 h-4 mr-2" />
-            Logout
-          </Button>
+          <div className="flex gap-2">
+            <Button
+              variant="outline"
+              onClick={() => navigate('/history')}
+              className="rounded-full border-slate-200"
+            >
+              <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              History
+            </Button>
+            <Button
+              variant="outline"
+              onClick={logout}
+              className="rounded-full border-slate-200"
+              data-testid="logout-button"
+            >
+              <LogOut className="w-4 h-4 mr-2" />
+              Logout
+            </Button>
+          </div>
         </div>
       </div>
 
       {/* Tables Overview */}
-      <div className="p-8">
-        <h2 className="text-xl font-bold mb-4" style={{ fontFamily: 'DM Sans, sans-serif' }}>Running Tables</h2>
+      <div className="p-4 md:p-6">
+        <h2 className="text-lg font-bold mb-3" style={{ fontFamily: 'DM Sans, sans-serif' }}>Running Tables</h2>
         
         {orders.length === 0 ? (
-          <Card className="p-12 text-center border-slate-200">
-            <div className="text-slate-400 text-lg">No active orders</div>
+          <Card className="p-8 text-center border-slate-200">
+            <div className="text-slate-400">No active orders</div>
           </Card>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
             {orders.map((order) => {
               const table = getOrderTable(order.id);
               return (
                 <Card
                   key={order.id}
-                  className={`p-6 border-2 transition-all hover:shadow-lg ${
+                  className={`p-4 border-2 transition-all hover:shadow-lg ${
                     hasNewItems(order) ? 'border-[#C9A961] bg-[#FFF8ED]' : 'border-slate-200'
                   }`}
                   data-testid={`order-card-${order.table_number}`}
                 >
-                  <div className="flex items-start justify-between mb-4">
+                  <div className="flex items-start justify-between mb-3">
                     <div>
-                      <h3 className="text-2xl font-bold" style={{ fontFamily: 'DM Sans, sans-serif' }}>
+                      <h3 className="text-xl font-bold" style={{ fontFamily: 'DM Sans, sans-serif' }}>
                         Table {order.table_number}
                       </h3>
-                      <div className="text-sm text-slate-500">
+                      <div className="text-xs text-slate-500">
                         {new Date(order.created_at).toLocaleTimeString()}
                       </div>
                     </div>
@@ -328,29 +350,29 @@ const ReceptionDashboard = () => {
                     )}
                   </div>
 
-                  <div className="space-y-2 mb-4 max-h-48 overflow-y-auto">
+                  <div className="space-y-1 mb-3 max-h-32 overflow-y-auto">
                     {order.items.map((item, index) => (
                       <div
                         key={index}
-                        className={`flex justify-between p-2 rounded ${
+                        className={`flex justify-between p-1.5 text-sm rounded ${
                           item.is_new ? 'bg-[#FFF8ED] border border-[#C9A961]' : 'bg-slate-50'
                         }`}
                       >
                         <div>
-                          <div className="font-medium">{item.item_name}</div>
-                          <div className="text-sm text-slate-500">Qty: {item.quantity}</div>
+                          <div className="font-medium text-sm">{item.item_name}</div>
+                          <div className="text-xs text-slate-500">Qty: {item.quantity}</div>
                         </div>
-                        <div className="font-bold mono">{formatPrice(item.price * item.quantity)}</div>
+                        <div className="font-bold mono text-sm">{formatPrice(item.price * item.quantity)}</div>
                       </div>
                     ))}
                   </div>
 
-                  <div className="flex justify-between items-center mb-4 pt-4 border-t border-slate-200">
-                    <span className="font-bold" style={{ fontFamily: 'DM Sans, sans-serif' }}>Total</span>
-                    <span className="text-2xl font-bold mono text-[#C9A961]">{formatPrice(order.total)}</span>
+                  <div className="flex justify-between items-center mb-3 pt-3 border-t border-slate-200">
+                    <span className="font-bold text-sm" style={{ fontFamily: 'DM Sans, sans-serif' }}>Total</span>
+                    <span className="text-xl font-bold mono text-[#C9A961]">{formatPrice(order.total)}</span>
                   </div>
 
-                  <div className="flex gap-2">
+                  <div className="flex gap-1.5">
                     {hasNewItems(order) && (
                       <Button
                         onClick={() => acknowledgeOrder(order.id)}
@@ -409,9 +431,21 @@ const ReceptionDashboard = () => {
                 ))}
               </div>
 
-              <div className="flex justify-between items-center pt-4 border-t-2 border-slate-900">
-                <span className="text-xl font-bold" style={{ fontFamily: 'DM Sans, sans-serif' }}>TOTAL</span>
-                <span className="text-3xl font-bold mono">{formatPrice(selectedOrder.total)}</span>
+              <div className="pt-4 space-y-2 border-t border-slate-200">
+                <div className="flex justify-between text-sm">
+                  <span className="text-slate-600">Subtotal</span>
+                  <span className="font-medium mono">{formatPrice(selectedOrder.subtotal || selectedOrder.total)}</span>
+                </div>
+                {selectedOrder.tax_amount > 0 && (
+                  <div className="flex justify-between text-sm">
+                    <span className="text-slate-600">{taxName} ({selectedOrder.tax_rate}%)</span>
+                    <span className="font-medium mono">{formatPrice(selectedOrder.tax_amount)}</span>
+                  </div>
+                )}
+                <div className="flex justify-between items-center pt-2 border-t-2 border-slate-900">
+                  <span className="text-xl font-bold" style={{ fontFamily: 'DM Sans, sans-serif' }}>TOTAL</span>
+                  <span className="text-3xl font-bold mono">{formatPrice(selectedOrder.total)}</span>
+                </div>
               </div>
 
               <div className="flex gap-2 pt-4">

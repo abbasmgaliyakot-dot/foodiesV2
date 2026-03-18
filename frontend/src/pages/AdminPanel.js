@@ -15,7 +15,7 @@ import { useNavigate } from 'react-router-dom';
 
 const AdminPanel = () => {
   const { API, getAuthHeader, logout } = useAuth();
-  const { formatPrice, currencySymbol, currencyCode, updateCurrency } = useCurrency();
+  const { formatPrice, currencySymbol, currencyCode, taxEnabled, taxRate, taxName, updateCurrency, updateTaxSettings } = useCurrency();
   const navigate = useNavigate();
   
   // State
@@ -33,15 +33,27 @@ const AdminPanel = () => {
   const [userForm, setUserForm] = useState({ username: '', password: '', role: 'staff' });
   const [tableForm, setTableForm] = useState({ table_number: '', capacity: '' });
   const [menuForm, setMenuForm] = useState({ name: '', category: '', price: '', description: '' });
-  const [settingsForm, setSettingsForm] = useState({ currency_symbol: '$', currency_code: 'USD' });
+  const [settingsForm, setSettingsForm] = useState({ 
+    currency_symbol: '$', 
+    currency_code: 'USD',
+    tax_enabled: false,
+    tax_rate: 0,
+    tax_name: 'Tax'
+  });
   const [editingItem, setEditingItem] = useState(null);
 
   useEffect(() => {
     fetchUsers();
     fetchTables();
     fetchMenu();
-    setSettingsForm({ currency_symbol: currencySymbol, currency_code: currencyCode });
-  }, [currencySymbol, currencyCode]);
+    setSettingsForm({ 
+      currency_symbol: currencySymbol, 
+      currency_code: currencyCode,
+      tax_enabled: taxEnabled,
+      tax_rate: taxRate,
+      tax_name: taxName
+    });
+  }, [currencySymbol, currencyCode, taxEnabled, taxRate, taxName]);
 
   const fetchUsers = async () => {
     try {
@@ -205,12 +217,16 @@ const AdminPanel = () => {
   };
 
   const saveSettings = async () => {
-    const result = await updateCurrency(settingsForm.currency_symbol, settingsForm.currency_code);
-    if (result.success) {
-      toast.success('Currency settings updated');
+    // Update currency
+    const currencyResult = await updateCurrency(settingsForm.currency_symbol, settingsForm.currency_code);
+    // Update tax
+    const taxResult = await updateTaxSettings(settingsForm.tax_enabled, settingsForm.tax_rate, settingsForm.tax_name);
+    
+    if (currencyResult.success && taxResult.success) {
+      toast.success('Settings updated successfully');
       setShowSettingsDialog(false);
     } else {
-      toast.error(result.error);
+      toast.error(currencyResult.error || taxResult.error || 'Failed to update settings');
     }
   };
 
@@ -256,32 +272,79 @@ const AdminPanel = () => {
             <DialogTrigger asChild>
               <Button variant="outline" className="rounded-full border-slate-200" data-testid="settings-button">
                 <DollarSign className="w-4 h-4 mr-2" />
-                Currency Settings
+                Settings
               </Button>
             </DialogTrigger>
-            <DialogContent data-testid="settings-dialog">
+            <DialogContent data-testid="settings-dialog" className="max-w-md">
               <DialogHeader>
-                <DialogTitle>Currency Settings</DialogTitle>
+                <DialogTitle>Settings</DialogTitle>
               </DialogHeader>
               <div className="space-y-4">
-                <div>
-                  <Label>Currency Symbol</Label>
-                  <Input
-                    value={settingsForm.currency_symbol}
-                    onChange={(e) => setSettingsForm({ ...settingsForm, currency_symbol: e.target.value })}
-                    placeholder="e.g., $, €, £, ₹"
-                    data-testid="currency-symbol-input"
-                  />
+                <div className="space-y-3">
+                  <h3 className="font-semibold text-sm">Currency</h3>
+                  <div className="grid grid-cols-2 gap-3">
+                    <div>
+                      <Label>Symbol</Label>
+                      <Input
+                        value={settingsForm.currency_symbol}
+                        onChange={(e) => setSettingsForm({ ...settingsForm, currency_symbol: e.target.value })}
+                        placeholder="$"
+                        data-testid="currency-symbol-input"
+                      />
+                    </div>
+                    <div>
+                      <Label>Code</Label>
+                      <Input
+                        value={settingsForm.currency_code}
+                        onChange={(e) => setSettingsForm({ ...settingsForm, currency_code: e.target.value })}
+                        placeholder="USD"
+                        data-testid="currency-code-input"
+                      />
+                    </div>
+                  </div>
                 </div>
-                <div>
-                  <Label>Currency Code</Label>
-                  <Input
-                    value={settingsForm.currency_code}
-                    onChange={(e) => setSettingsForm({ ...settingsForm, currency_code: e.target.value })}
-                    placeholder="e.g., USD, EUR, GBP, INR"
-                    data-testid="currency-code-input"
-                  />
+                
+                <div className="border-t pt-4 space-y-3">
+                  <div className="flex items-center justify-between">
+                    <h3 className="font-semibold text-sm">Tax Settings</h3>
+                    <label className="flex items-center gap-2 cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={settingsForm.tax_enabled}
+                        onChange={(e) => setSettingsForm({ ...settingsForm, tax_enabled: e.target.checked })}
+                        className="w-4 h-4"
+                        data-testid="tax-enabled-checkbox"
+                      />
+                      <span className="text-sm">Enable Tax</span>
+                    </label>
+                  </div>
+                  
+                  {settingsForm.tax_enabled && (
+                    <div className="space-y-3">
+                      <div>
+                        <Label>Tax Name</Label>
+                        <Input
+                          value={settingsForm.tax_name}
+                          onChange={(e) => setSettingsForm({ ...settingsForm, tax_name: e.target.value })}
+                          placeholder="e.g., GST, VAT, Sales Tax"
+                          data-testid="tax-name-input"
+                        />
+                      </div>
+                      <div>
+                        <Label>Tax Rate (%)</Label>
+                        <Input
+                          type="number"
+                          step="0.01"
+                          value={settingsForm.tax_rate}
+                          onChange={(e) => setSettingsForm({ ...settingsForm, tax_rate: parseFloat(e.target.value) || 0 })}
+                          placeholder="0.00"
+                          data-testid="tax-rate-input"
+                        />
+                      </div>
+                    </div>
+                  )}
                 </div>
+                
                 <Button
                   onClick={saveSettings}
                   className="w-full bg-[#C9A961] hover:bg-[#B8945F] text-white rounded-full"

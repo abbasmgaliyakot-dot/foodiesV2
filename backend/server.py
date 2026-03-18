@@ -113,18 +113,28 @@ class OrderResponse(BaseModel):
     table_id: str
     table_number: str
     items: List[OrderItem]
+    subtotal: float
+    tax_amount: float = 0.0
+    tax_rate: float = 0.0
     total: float
     status: str  # active, completed, cancelled
     created_at: str
     updated_at: str
+    completed_at: Optional[str] = None
 
 class SettingsResponse(BaseModel):
     currency_symbol: str
     currency_code: str
+    tax_enabled: bool = False
+    tax_rate: float = 0.0
+    tax_name: str = "Tax"
 
 class SettingsUpdate(BaseModel):
     currency_symbol: str
     currency_code: str
+    tax_enabled: bool = False
+    tax_rate: float = 0.0
+    tax_name: str = "Tax"
 
 # Helper functions
 def hash_password(password: str) -> str:
@@ -356,10 +366,14 @@ async def create_order(order: OrderCreate, current_user: UserResponse = Depends(
         "table_id": order.table_id,
         "table_number": table["table_number"],
         "items": [],
+        "subtotal": 0.0,
+        "tax_amount": 0.0,
+        "tax_rate": 0.0,
         "total": 0.0,
         "status": "active",
         "created_at": now,
-        "updated_at": now
+        "updated_at": now,
+        "completed_at": None
     }
     
     await db.orders.insert_one(order_doc)
@@ -377,6 +391,11 @@ async def add_order_items(order_id: str, order_items: OrderAddItems, current_use
     if not order:
         raise HTTPException(status_code=404, detail="Order not found")
     
+    # Get tax settings
+    settings = await db.settings.find_one({"key": "app_settings"}, {"_id": 0})
+    tax_enabled = settings.get("tax_enabled", False) if settings else False
+    tax_rate = settings.get("tax_rate", 0.0) if settings else 0.0
+    
     new_items = []
     for item in order_items.items:
         item_id = generate_id()
@@ -392,14 +411,19 @@ async def add_order_items(order_id: str, order_items: OrderAddItems, current_use
         }
         new_items.append(order_item)
     
-    # Calculate new total
+    # Calculate totals
     all_items = order.get("items", []) + new_items
-    total = sum(item["price"] * item["quantity"] for item in all_items)
+    subtotal = sum(item["price"] * item["quantity"] for item in all_items)
+    tax_amount = (subtotal * tax_rate / 100) if tax_enabled else 0.0
+    total = subtotal + tax_amount
     
     await db.orders.update_one(
         {"id": order_id},
         {"$set": {
             "items": all_items,
+            "subtotal": subtotal,
+            "tax_amount": tax_amount,
+            "tax_rate": tax_rate,
             "total": total,
             "updated_at": datetime.now(timezone.utc).isoformat()
         }}
@@ -453,9 +477,14 @@ async def complete_order(order_id: str, current_user: UserResponse = Depends(get
     if not order:
         raise HTTPException(status_code=404, detail="Order not found")
     
+    completed_at = datetime.now(timezone.utc).isoformat()
     await db.orders.update_one(
         {"id": order_id},
-        {"$set": {"status": "completed", "updated_at": datetime.now(timezone.utc).isoformat()}}
+        {"$set": {
+            "status": "completed",
+            "updated_at": completed_at,
+            "completed_at": completed_at
+        }}
     )
     
     # Update table status
@@ -506,14 +535,26 @@ async def get_settings(current_user: UserResponse = Depends(get_current_user)):
         default_settings = {
             "key": "app_settings",
             "currency_symbol": "$",
-            "currency_code": "USD"
+            "currency_code": "USD",
+            "tax_enabled": False,
+            "tax_rate": 0.0,
+            "tax_name": "Tax"
         }
         await db.settings.insert_one(default_settings)
-        return SettingsResponse(currency_symbol="$", currency_code="USD")
+        return SettingsResponse(
+            currency_symbol="$", 
+            currency_code="USD",
+            tax_enabled=False,
+            tax_rate=0.0,
+            tax_name="Tax"
+        )
     
     return SettingsResponse(
         currency_symbol=settings.get("currency_symbol", "$"),
-        currency_code=settings.get("currency_code", "USD")
+        currency_code=settings.get("currency_code", "USD"),
+        tax_enabled=settings.get("tax_enabled", False),
+        tax_rate=settings.get("tax_rate", 0.0),
+        tax_name=settings.get("tax_name", "Tax")
     )
 
 @api_router.put("/settings", response_model=SettingsResponse)
@@ -525,19 +566,28 @@ async def update_settings(settings_update: SettingsUpdate, current_user: UserRes
         {"key": "app_settings"},
         {"$set": {
             "currency_symbol": settings_update.currency_symbol,
-            "currency_code": settings_update.currency_code
+            "currency_code": settings_update.currency_code,
+            "tax_enabled": settings_update.tax_enabled,
+            "tax_rate": settings_update.tax_rate,
+            "tax_name": settings_update.tax_name
         }},
         upsert=True
     )
     
     await sio.emit('settings_updated', {
         "currency_symbol": settings_update.currency_symbol,
-        "currency_code": settings_update.currency_code
+        "currency_code": settings_update.currency_code,
+        "tax_enabled": settings_update.tax_enabled,
+        "tax_rate": settings_update.tax_rate,
+        "tax_name": settings_update.tax_name
     })
     
     return SettingsResponse(
         currency_symbol=settings_update.currency_symbol,
-        currency_code=settings_update.currency_code
+        currency_code=settings_update.currency_code,
+        tax_enabled=settings_update.tax_enabled,
+        tax_rate=settings_update.tax_rate,
+        tax_name=settings_update.tax_name
     )
 
 # Include router

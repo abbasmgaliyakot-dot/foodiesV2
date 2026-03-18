@@ -5,6 +5,7 @@ import LoginPage from '@/pages/LoginPage';
 import StaffView from '@/pages/StaffView';
 import ReceptionDashboard from '@/pages/ReceptionDashboard';
 import AdminPanel from '@/pages/AdminPanel';
+import HistoryPage from '@/pages/HistoryPage';
 import { AuthProvider, useAuth } from '@/contexts/AuthContext';
 import { SocketProvider } from '@/contexts/SocketContext';
 import { CurrencyProvider } from '@/contexts/CurrencyContext';
@@ -43,6 +44,14 @@ function AppRoutes() {
         element={
           <ProtectedRoute>
             <ReceptionDashboard />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/history"
+        element={
+          <ProtectedRoute>
+            <HistoryPage />
           </ProtectedRoute>
         }
       />
