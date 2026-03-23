@@ -1,7 +1,6 @@
 aiohappyeyeballs==2.6.1
 aiohttp==3.13.3
 aiosignal==1.4.0
-annotated-doc==0.0.4
 annotated-types==0.7.0
 anyio==4.12.1
 attrs==25.4.0
@@ -25,15 +24,15 @@ filelock==3.25.0
 flake8==7.3.0
 frozenlist==1.8.0
 fsspec==2026.2.0
+# google-generativeai REMOVED — replaced by google-genai==1.65.0
 google-api-core[grpc]>=2.30.0,<3.0.0
 google-api-python-client==2.191.0
-google-auth==2.49.0.dev0
+google-auth==2.38.0
 google-auth-httplib2==0.3.0
 google-genai==1.65.0
-google-generativeai>=0.8.6,<1.0.0
 googleapis-common-protos>=1.72.0,<2.0.0
 grpcio>=1.78.0
-grpcio-status >=1.76
+grpcio-status>=1.76
 h11==0.16.0
 hf-xet==1.3.2
 httpcore==1.0.9
@@ -72,7 +71,8 @@ platformdirs==4.9.2
 pluggy==1.6.0
 propcache==0.4.1
 proto-plus>=1.27.1,<2.0.0
-protobuf>=6.31.1,<7.0.0
+# protobuf: >=4.25.8,<6.0.0 satisfies google-api-core, google-genai, and google-ai-generativelanguage
+protobuf>=4.25.8,<6.0.0
 pyasn1==0.6.2
 pyasn1_modules==0.4.2
 pycodestyle==2.14.0
