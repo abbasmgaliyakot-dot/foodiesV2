@@ -24,10 +24,11 @@ filelock==3.25.0
 flake8==7.3.0
 frozenlist==1.8.0
 fsspec==2026.2.0
-# google-generativeai REMOVED — replaced by google-genai==1.65.0
+# google-generativeai REMOVED — replaced by google-genai
 google-api-core[grpc]>=2.30.0,<3.0.0
 google-api-python-client==2.191.0
-google-auth==2.38.0
+# google-auth: >=2.47.0 required by google-genai 1.65.0; unpinned so pip picks latest compatible stable
+google-auth>=2.47.0,<3.0.0
 google-auth-httplib2==0.3.0
 google-genai==1.65.0
 googleapis-common-protos>=1.72.0,<2.0.0
@@ -71,7 +72,7 @@ platformdirs==4.9.2
 pluggy==1.6.0
 propcache==0.4.1
 proto-plus>=1.27.1,<2.0.0
-# protobuf: >=4.25.8,<6.0.0 satisfies google-api-core, google-genai, and google-ai-generativelanguage
+# protobuf: <6.0.0 required by google-ai-generativelanguage (pulled in by google-genai)
 protobuf>=4.25.8,<6.0.0
 pyasn1==0.6.2
 pyasn1_modules==0.4.2
